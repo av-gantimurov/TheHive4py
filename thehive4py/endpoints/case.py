@@ -283,6 +283,42 @@ class CaseEndpoint(EndpointBase):
             json={"query": query},
         )
 
+    # TODO Fix typing
+    def find_procedures(
+        self,
+        case_id: CaseId,
+        filters: Optional[FilterExpr] = None,
+        sortby: Optional[SortExpr] = None,
+        paginate: Optional[Paginate] = None,
+    ) -> List:
+        query: QueryExpr = [
+            {"_name": "getCase", "idOrName": case_id},
+            {"_name": "procedures"},
+            *self._build_subquery(filters=filters, sortby=sortby, paginate=paginate),
+        ]
+        return self._session.make_request(
+            "POST",
+            path="/api/v1/query",
+            params={"name": "case-procedures"},
+            json={"query": query},
+        )
+
+    # TODO fix typing
+    # {"tactic":"persistence", "description":"1", "patternId":"T1574.002",
+    # "occurDate":1669067880000}
+    # description - optional
+    # occurDate - required
+    # tactic - required
+    # patternId - required
+    #
+    def create_procedure(self, case_id: CaseId, procedure):
+        procedure["caseId"] = case_id
+        return self._session.make_request(
+            "POST",
+            path="/api/v1/procedure",
+            json=procedure,
+        )
+
     def close(
         self,
         case_id: CaseId,
