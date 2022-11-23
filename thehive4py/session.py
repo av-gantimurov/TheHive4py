@@ -34,15 +34,21 @@ class TheHiveSession(requests.Session):
         self.headers["User-Agent"] = f"thehive4py/{__version__}"
 
         if username and password:
-            self.headers["Authorization"] = requests.auth._basic_auth_str(
-                username, password
-            )
+            # self.headers["Authorization"] = requests.auth._basic_auth_str(
+            #     username, password
+            # )
+            self._login(username, password)
         elif apikey:
             self.headers["Authorization"] = f"Bearer {apikey}"
         else:
             raise TheHiveError(
                 "Either apikey or the username/password combination must be provided!"
             )
+
+    def _login(self, username: str, password: str) -> dict:
+        return self.make_request(
+            "POST", "/api/v1/login", data=dict(user=username, password=password)
+        )
 
     def _sanitize_hive_url(self, hive_url: str) -> str:
         """Sanitize the base url for the client."""
