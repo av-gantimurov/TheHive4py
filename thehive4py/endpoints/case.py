@@ -117,6 +117,13 @@ class CaseEndpoint(EndpointBase):
             "DELETE", path=f"/api/v1/case/{case_id}/attachment/{attachment_id}"
         )
 
+    def list_observable_shares(
+        self, case_id: CaseId, observable_id: str
+    ) -> List[OutputShare]:
+        return self._session.make_request(
+            "GET", path=f"/api/v1/case/{case_id}/observable/{observable_id}/shares"
+        )
+
     def list_shares(self, case_id: CaseId) -> List[OutputShare]:
         return self._session.make_request("GET", path=f"/api/v1/case/{case_id}/shares")
 
