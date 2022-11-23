@@ -307,15 +307,9 @@ class CaseEndpoint(EndpointBase):
             json={"query": query},
         )
 
-    # TODO fix typing
-    # {"tactic":"persistence", "description":"1", "patternId":"T1574.002",
-    # "occurDate":1669067880000}
-    # description - optional
-    # occurDate - required
-    # tactic - required
-    # patternId - required
-    #
-    def create_procedure(self, case_id: CaseId, procedure: InputProcedure):
+    def create_procedure(
+        self, case_id: CaseId, procedure: InputProcedure
+    ) -> OutputProcedure:
         procedure["caseId"] = case_id
         return self._session.make_request(
             "POST",

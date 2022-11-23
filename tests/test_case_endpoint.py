@@ -97,6 +97,19 @@ class TestCaseEndpoint:
         result = thehive.case.merge_similar_observables(case_id=case_id)
         assert result == {"deleted": 0, "untouched": 2, "updated": 0}
 
+    def test_create_and_get_procedure(self, thehive: TheHiveApi, test_case: OutputCase):
+        created_procedure = thehive.case.create_procedure(
+            case_id=test_case["_id"],
+            procedure={
+                "tactic": "persistence",
+                "description": "test description",
+                "patternId": "T1574.002",
+                "occurDate": 1669067880000,
+            },
+        )
+        procedures = thehive.case.find_procedures(case_id=test_case["_id"])
+        assert created_procedure in procedures
+
     def test_get_linked_cases(self, thehive: TheHiveApi, test_cases: List[OutputCase]):
         common_observable: InputObservable = {
             "data": "example.com",
