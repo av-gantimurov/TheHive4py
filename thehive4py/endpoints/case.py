@@ -18,6 +18,11 @@ from thehive4py.types.case import (
 )
 from thehive4py.types.comment import OutputComment
 from thehive4py.types.observable import InputObservable, OutputObservable
+from thehive4py.types.procedure import (
+    InputProcedure,
+    InputUpdateProcedure,
+    OutputProcedure,
+)
 from thehive4py.types.share import InputShare, OutputShare
 from thehive4py.types.task import InputTask, OutputTask
 from thehive4py.types.timeline import OutputTimeline
@@ -283,14 +288,13 @@ class CaseEndpoint(EndpointBase):
             json={"query": query},
         )
 
-    # TODO Fix typing
     def find_procedures(
         self,
         case_id: CaseId,
         filters: Optional[FilterExpr] = None,
         sortby: Optional[SortExpr] = None,
         paginate: Optional[Paginate] = None,
-    ) -> List:
+    ) -> List[OutputProcedure]:
         query: QueryExpr = [
             {"_name": "getCase", "idOrName": case_id},
             {"_name": "procedures"},
@@ -311,7 +315,7 @@ class CaseEndpoint(EndpointBase):
     # tactic - required
     # patternId - required
     #
-    def create_procedure(self, case_id: CaseId, procedure):
+    def create_procedure(self, case_id: CaseId, procedure: InputProcedure):
         procedure["caseId"] = case_id
         return self._session.make_request(
             "POST",
