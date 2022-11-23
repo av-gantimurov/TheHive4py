@@ -5,6 +5,7 @@ from thehive4py.query import QueryExpr
 from thehive4py.query.filters import FilterExpr
 from thehive4py.query.page import Paginate
 from thehive4py.query.sort import SortExpr
+from thehive4py.types.attachment import OutputAttachment
 from thehive4py.types.observable import (
     InputBulkUpdateObservable,
     InputObservable,
@@ -77,7 +78,7 @@ class ObservableEndpoint(EndpointBase):
 
     def list_shares(self, observable_id: str) -> List[OutputShare]:
         return self._session.make_request(
-            "GET", path=f"/api/v1/case/{observable_id}/shares"
+            "GET", path=f"/api/v1/observable/{observable_id}/shares"
         )
 
     def find(
@@ -111,3 +112,22 @@ class ObservableEndpoint(EndpointBase):
             params={"name": "observable.count"},
             json={"query": query},
         )
+
+    def download_attachment(
+        self, attachment: OutputAttachment, attachment_path: str = None
+    ) -> str:
+        _id = attachment["id"]
+        name = attachment.get("name", _id)
+        self._session.make_request(
+            "GET",
+            path=f"/api/datastore/{_id}",
+            download_path=attachment_path or name,
+        )
+        return name
+
+    def download(
+        self, observable: OutputObservable, attachment_path: str = None
+    ) -> str:
+        if "attachment" not in observable:
+            return None
+        return self.download_attachment(observable["attachment"], attachment_path)
