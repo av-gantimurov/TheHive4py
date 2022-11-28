@@ -18,8 +18,10 @@ class ProcedureEndpoint(EndpointBase):
     def create_in_case(
         self, case_id: str, procedure: InputProcedure
     ) -> OutputProcedure:
+        procedure["caseId"] = case_id
+
         return self._session.make_request(
-            "POST", path=f"/api/v1/case/{case_id}/procedure", json=procedure
+            "POST", path="/api/v1/procedure", json=procedure
         )
 
     def get(self, procedure_id: str) -> OutputProcedure:
